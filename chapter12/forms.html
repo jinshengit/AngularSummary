@@ -10,22 +10,39 @@
     <script>
         angular.module("exampleApp",[]).controller("defaultCtrl", function($scope){
 
+            $scope.requireValue = true;
+            $scope.matchPattern = new RegExp("^[a-z]");
+
             $scope.addUser = function(userDetails){
-                $scope.message = userDetails.name + "(" + userDetails.email + ")(" + userDetails.agreed + ")";
+                if(myForm.$valid){
+                    $scope.message = userDetails.name + "(" + userDetails.email + ")(" + userDetails.agreed + ")";
+                }else{
+                    $scope.showValidation = true;
+                }
             }
 
             $scope.message = "Ready";
 
+            $scope.getError = function(error){
+                if(angular.isDefined(error)){
+                    if(error.required){
+                        return "Please enter a value";
+                    }else if(error.email){
+                        return "Please enter a valid email address";
+                    }
+                }
+            }
+
             $scope.todos = [{
-                action: "Get groceries", complete: false
+                action: "Get groceries", complete: false, id: 100, place: "Store"
             },{
-                action: "Call plumber", complete: false
+                action: "Call plumber", complete: false, id: 200, place: "Home"
             },{
-                action: "Buy running shoes", complete: true
+                action: "Buy running shoes", complete: true, id: 300, place: "Home"
             },{
-                action: "Buy flowers", complete: false
+                action: "Buy flowers", complete: false, id: 400, place: "Store"
             },{
-                action: "Call family", complete: false
+                action: "Call family", complete: false, id: 500, place: "Store"
             }] ;
 
             $scope.addNewItem = function(newItem){
@@ -36,10 +53,90 @@
             };
         });
     </script>
+    <style>
+        form .ng-invalid.ng-dirty{
+            background-color: lightpink;
+        }
+        form .ng-valid.ng-dirty{
+            background-color: lightgreen;
+        }
+        span.summary.ng-invalid{
+            color: red;
+            font-weight: bold;
+        }
+        span.summary.ng-valid{
+            color:green;
+        }
+        div.error{
+            color:red;
+            font-weight: bold;
+        }
+
+        form.validate .ng-invalid-required.ng-dirty{
+            background-color: lightpink;
+        }
+        form.validate .ng-invalid-email.ng-dirty{
+            background-color: lightgoldenrodyellow;
+        }
+    </style>
 </head>
 <body>
+    <div class="panel" ng-controller="defaultCtrl">
+        <form name="form4" novalidate>
+            <div class="well">
+                <div class="form-group">
+                    <label>Select an Action:</label>
+                    <select ng-model="selectValue" ng-options="item.action group by item.place for item in todos">
+                        <option value="">(Pick One)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="well">
+                <p>Selected: {{selectValue || 'None'}}</p>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel" ng-controller="defaultCtrl">
+        <form name="form3" novalidate>
+            <div class="well">
+                <div class="checkbox">
+                    <label>
+                        <input name="chkSample" type="checkbox" ng-model="inputValue"
+                               ng-true-value="Hurrah!" ng-false-value="Boo!">
+                        This is a checkbox
+                    </label>
+                </div>
+            </div>
+            <div class="well">
+                <p>Model Value: {{inputValue}}</p>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel" ng-controller="defaultCtrl">
+        <form name="form2" novalidate>
+            <div class="well">
+                <div class="form-group">
+                    <label>Text:</label>
+                    <input name="sample" class="form-control" ng-model="inputValue"
+                           ng-required="requireValue" ng-minlength="3"
+                           ng-maxlength="10" ng-pattern="matchPattern">
+                </div>
+            </div>
+            <div class="well">
+                <p>Required Error: {{form2.sample.$error.required}}</p>
+                <p>Min Length Error: {{form2.sample.$error.minlength}}</p>
+                <p>Max Length Error: {{form2.sample.$error.maxlength}}</p>
+                <p>Pattern Error: {{form2.sample.$error.pattern}}</p>
+                <p>Element Valid: {{form2.sample.$valid}}</p>
+            </div>
+        </form>
+    </div>
+
     <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
-        <form name="myForm" novalidate ng-submit="addUser(newUser)">
+        <form name="myForm" novalidate ng-submit="addUser(newUser)" ng-class="showValidation ? 'validate' : ''">
             <div class="well">
                 <div class="form-group">
                     <label>Name:</label>
@@ -48,6 +145,9 @@
                 <div class="form-group">
                     <label>Email:</label>
                     <input name="userEmail" type="email" class="form-control" required ng-model="newUser.email">
+                    <div class="error" ng-show="showValidation">
+                        {{getError(myForm.userEmail.$error)}}
+                    </div>
                 </div>
                 <div class="checkbox">
                     <label>
@@ -62,7 +162,10 @@
             <div class="well">
                 Message: {{message}}
                 <div>
-                    Valid: {{myForm.$valid}}
+                    Valid:
+                    <span class="summary" ng-class="myForm.$valid ? 'ng-valid' : 'ng-invalid'">
+                        {{myForm.$valid}}
+                    </span>
                 </div>
             </div>
         </form>
