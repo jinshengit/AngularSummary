@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../bootstrap.css">
+    <link rel="stylesheet" href="../bootstrap-theme.css">
+    <script src="../angular.js"></script>
+    <script>
+        angular.module("exampleApp",[]).controller("defaultCtrl", function($scope, $location){
+            $scope.message = "Tap Me!";
+
+            $scope.dataValue = false;
+
+            $scope.data = {};
+
+            $scope.todos = [{
+                action: "Get groceries", complete: false
+            },{
+                action: "Call plumber", complete: false
+            },{
+                action: "Buy running shoes", complete: true
+            },{
+                action: "Buy flowers", complete: false
+            },{
+                action: "Call family", complete: false
+            }] ;
+
+            $scope.buttonNames = ["Red", "Green", "Blue"];
+
+            $scope.settings = {
+                Rows: "Blue",
+                Columns: "Green"
+            };
+
+            $scope.handleEvent = function(e){
+                console.log("Event type: " + e.type);
+                $scope.data.columnColor = e.type == "mouseover" ? "Green" : "Blue";
+            }
+        }).directive("tap", function(){
+           return function(scope, elem, attrs){
+               elem.on("touchstart touchend", function(){
+                  scope.$apply(attrs["tap"]);
+               });
+           }
+        });
+    </script>
+
+    <style>
+        td > *:first-child{
+            font-weight: bold;
+        }
+        tr.Red{
+            background-color: lightcoral;
+        }
+        tr.Green{
+            background-color: lightgreen;
+        }
+        tr.Blue{
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+    <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
+
+        <div class="checkbox well">
+            <label>
+                <input type="checkbox" ng-model="dataValue">
+                Set the Data Value
+            </label>
+        </div>
+        <button class="btn btn-success" ng-disabled="dataValue">My Button</button>
+
+        <div class="well" tap="message = 'Tapped!'">
+            {{message}}
+        </div>
+
+        <h3 class="panel-header">To Do List</h3>
+
+        <div class="well">
+            <span ng-repeat="button in buttonNames">
+                <button class="btn btn-info" ng-click="data.rowColor=button">
+                    {{button}}
+                </button>
+            </span>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Action</th>
+                <th>Done</th>
+            </tr>
+            </thead>
+            <tr ng-repeat="item in todos" ng-class="data.rowColor" ng-mouseenter="hanldEvent($event)" ng-mouseleave="handleEvent($event)">
+                <td>{{$index+1}}</td>
+                <td>{{item.action}}</td>
+                <td ng-class="data.columnColor">{{item.complete}}</td>
+            </tr>
+        </table>
+
+        <div class="row well">
+            <div class="col-xs-6" ng-repeat="(key, val) in settings">
+                <h4>{{key}}</h4>
+                <div class="radio" ng-repeat="button in buttonNames">
+                    <label>
+                        <input type="radio" ng-model="settings[key]" value="{{button}}">
+                        {{button}}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Action</th>
+                    <th>Done</th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in todos" ng-class="settings.Rows">
+                <td>{{$index+1}}</td>
+                <td>{{item.action}}</td>
+                <td ng-style="{'background-color': settings.Columns}">{{item.complete}}</td>
+            </tr>
+        </table>
+    </div>
+    <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
+        <h3 class="panel-header">To Do List</h3>
+
+        <div class="checkbox well">
+            <label>
+                <input type="checkbox" ng-model="todos[2].complete"/>
+                Item 3 is complete
+            </label>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Action</th>
+                    <th>Done</th>
+                    <th>Done</th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in todos">
+                <td>{{$index+1}}</td>
+                <td>{{item.action}}</td>
+                <td>
+                    <span ng-hide="item.complete">(Incomplete)</span>
+                    <span ng-show="item.complete">(Done)</span>
+                </td>
+                <td>
+                    <span ng-if="!item.complete">(Incomplete)</span>
+                    <span ng-if="item.complete">(Done)</span>
+                </td>
+            </tr>
+        </table>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Action</th>
+                    <th>Done</th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in todos | filter:{complete: 'false'}">
+                <td>{{$index+1}}</td>
+                <td>{{item.action}}</td>
+                <td>{{item.complete}}</td>
+            </tr>
+        </table>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Action</th>
+                <th>Done</th>
+            </tr>
+            </thead>
+            <tr ng-repeat="item in todos" ng-class-even="settings.Rows" ng-class-odd="settings.Columns">
+                <td>{{$index+1}}</td>
+                <td>{{item.action}}</td>
+                <td>{{item.complete}}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
