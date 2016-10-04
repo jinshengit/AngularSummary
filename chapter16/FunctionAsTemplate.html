@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+<head>
+    <meta charset="UTF-8">
+    <title>Using a Function as a Template</title>
+    <link rel="stylesheet" href="../bootstrap.css">
+    <link rel="stylesheet" href="../bootstrap-theme.css">
+    <script src="../angular.js"></script>
+    <script type="text/template" id="listTemplate">
+        <ul>
+            <li ng-repeat="item in data">{{item.price | currency}}</li>
+        </ul>
+    </script>
+    <script>
+        angular.module("exampleApp",[])
+                .directive("unorderedList", function(){
+                    return {
+                        link: function(scope, element, attrs){
+                            scope.data = scope[attrs["unorderedList"]];
+                        },
+                        restrict: "A",
+                        template: function(){
+                            return angular.element(document.querySelector("#listTemplate")).html();
+                        }
+                    }
+                }).controller("defaultCtrl", function($scope){
+                    $scope.products = [{
+                        name: "Apples", category: "Fruit", price: 1.20, expiry: 10
+                    },{
+                        name: "Bananas", category: "Fruit", price: 2.42, expiry: 7
+                    },{
+                        name: "Pears", category: "Fruit", price: 2.02, expiry: 6
+                    }];
+                });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
